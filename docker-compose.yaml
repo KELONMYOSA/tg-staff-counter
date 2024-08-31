@@ -1,0 +1,8 @@
+services:
+  counter-bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: staff-counter-bot
+    container_name: counter-bot
+    restart: unless-stopped
