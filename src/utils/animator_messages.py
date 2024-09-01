@@ -7,10 +7,10 @@ from src.db.crud import Database
 
 
 def handle_animator_msg(message: Message):
-    if not message.text.startswith("@Qguru_kzn_bot"):
+    if "@Qguru_kzn_bot" not in message.text:
         return
 
-    pattern = r"Аниматор:\s*(\d+)"
+    pattern = r"[Аа]ниматор\s*[:\s]?\s*(\d+)"
     match = re.search(pattern, message.text)
 
     if match:
