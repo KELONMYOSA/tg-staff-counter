@@ -23,3 +23,18 @@ class Database:
         else:
             self.connection.commit()
         self.connection.close()
+
+    # Сохраняем сообщение с информацией об аниматорах
+    def add_animator_msg(self, timestamp: str, tg_id: int, tg_username: str | None, count: int, link: str):
+        self.cur.execute(
+            "INSERT INTO animator_messages (timestamp, tg_id, tg_username, count, link) VALUES (?, ?, ?, ?, ?)",
+            (timestamp, tg_id, tg_username, count, link),
+        )
+
+    # Получаем сообщения с информацией об аниматорах в диапазоне дат
+    def get_animator_between_dates(self, start_date: str, end_date: str):
+        self.cur.execute(
+            "SELECT timestamp, tg_id, tg_username, count, link FROM animator_messages WHERE timestamp BETWEEN ? AND ?",
+            (start_date, end_date),
+        )
+        return self.cur.fetchall()

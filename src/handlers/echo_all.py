@@ -1,13 +1,16 @@
 from aiogram import F, Router
 from aiogram.exceptions import TelegramBadRequest
+from aiogram.filters import StateFilter
 from aiogram.types import Message
+
+from src.utils.animator_messages import handle_animator_msg
 
 router = Router()
 
-cmd_list = ["/start"]
+cmd_list = ["/start", "/get_report"]
 
 
-@router.message(~F.text.in_(cmd_list))
+@router.message(~F.text.in_(cmd_list), StateFilter(None))
 async def echo_all(message: Message):
     if message.text and message.text.startswith("/"):
         try:
@@ -16,7 +19,4 @@ async def echo_all(message: Message):
             print(e)
         await message.answer(text=f'Я не знаю такую команду: "{message.text}"')
     else:
-        print(
-            f"Сообщение из группы {message.chat.title} ({message.chat.id}):"
-            f" {message.from_user.username}: {message.text}"
-        )
+        handle_animator_msg(message)
