@@ -1,4 +1,5 @@
 import re
+from datetime import timedelta
 
 from aiogram.types import Message
 
@@ -25,7 +26,7 @@ def handle_msg(message: Message):
         "Мастер теней 60 мин": r"[Мм]астер теней 60 мин\s*[:\s]?\s*(\д+)",
     }
 
-    timestamp = message.date.strftime("%Y-%m-%d %H:%M:%S")
+    timestamp = (message.date + timedelta(hours=3)).strftime("%Y-%m-%d %H:%M:%S")
     tg_id = message.from_user.id
     tg_username = message.from_user.username
     link = f"https://t.me/c/{str(message.chat.id)[-10:]}/{message.message_id}"

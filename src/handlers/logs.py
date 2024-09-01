@@ -12,7 +12,7 @@ router = Router()
 
 @router.message(Command("logs"))
 async def cmd_logs(message: Message):
-    now = message.date
+    now = message.date + +timedelta(hours=3)
     start_date = (now - timedelta(days=45)).strftime("%Y-%m-%d %H:%M:%S")
     end_date = now.strftime("%Y-%m-%d %H:%M:%S")
 

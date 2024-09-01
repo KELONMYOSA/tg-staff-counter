@@ -14,7 +14,7 @@ router = Router()
 
 @router.message(Command("get_report"))
 async def cmd_get_report(message: Message):
-    now = message.date
+    now = message.date + timedelta(hours=3)
     current_month = get_month_name(now.month)
     previous_month = get_month_name((now.replace(day=1) - timedelta(days=1)).month)
 
@@ -31,7 +31,7 @@ async def cmd_get_report(message: Message):
 
 @router.callback_query(F.data == "rep_current_month")
 async def get_report_cur_month(call: CallbackQuery):
-    now = call.message.date
+    now = call.message.date + timedelta(hours=3)
     start_date = now.replace(day=1, hour=0, minute=0, second=0).strftime("%Y-%m-%d %H:%M:%S")
     end_date = now.strftime("%Y-%m-%d %H:%M:%S")
 
@@ -42,7 +42,7 @@ async def get_report_cur_month(call: CallbackQuery):
 
 @router.callback_query(F.data == "rep_previous_month")
 async def get_report_prev_month(call: CallbackQuery):
-    now = call.message.date
+    now = call.message.date + timedelta(hours=3)
     start_date = (
         (now.replace(day=1) - timedelta(days=1))
         .replace(day=1, hour=0, minute=0, second=0)
