@@ -6,7 +6,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, InlineKeyboardButton, Message
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from src.utils.animator_messages import get_animator_report
+from src.utils.handle_messages import get_report
 from src.utils.transformations import get_month_name
 
 router = Router()
@@ -21,15 +21,15 @@ async def cmd_get_report(message: Message):
     keyboard = InlineKeyboardBuilder()
     keyboard.max_width = 2
     buttons = [
-        InlineKeyboardButton(text=current_month, callback_data="rep_anim_current_month"),
-        InlineKeyboardButton(text=previous_month, callback_data="rep_anim_previous_month"),
-        InlineKeyboardButton(text="Свои даты", callback_data="rep_anim_custom_dates"),
+        InlineKeyboardButton(text=current_month, callback_data="rep_current_month"),
+        InlineKeyboardButton(text=previous_month, callback_data="rep_previous_month"),
+        InlineKeyboardButton(text="Свои даты", callback_data="rep_custom_dates"),
     ]
     keyboard.add(*buttons)
     await message.answer("Выберите период для отчета:", reply_markup=keyboard.as_markup())
 
 
-@router.callback_query(F.data == "rep_anim_current_month")
+@router.callback_query(F.data == "rep_current_month")
 async def get_report_cur_month(call: CallbackQuery):
     now = call.message.date
     start_date = now.replace(day=1, hour=0, minute=0, second=0).strftime("%Y-%m-%d %H:%M:%S")
@@ -37,10 +37,10 @@ async def get_report_cur_month(call: CallbackQuery):
 
     await call.answer()
     await call.message.delete()
-    await call.message.answer(get_animator_report(start_date, end_date), parse_mode="HTML")
+    await call.message.answer(get_report(start_date, end_date), parse_mode="HTML")
 
 
-@router.callback_query(F.data == "rep_anim_previous_month")
+@router.callback_query(F.data == "rep_previous_month")
 async def get_report_prev_month(call: CallbackQuery):
     now = call.message.date
     start_date = (
@@ -54,25 +54,25 @@ async def get_report_prev_month(call: CallbackQuery):
 
     await call.answer()
     await call.message.delete()
-    await call.message.answer(get_animator_report(start_date, end_date), parse_mode="HTML")
+    await call.message.answer(get_report(start_date, end_date), parse_mode="HTML")
 
 
-@router.callback_query(F.data == "rep_anim_custom_dates")
+@router.callback_query(F.data == "rep_custom_dates")
 async def get_report_custom_dates(call: CallbackQuery, state: FSMContext):
     await call.answer()
     await call.message.delete()
-    await state.set_state("rep_anim_get_dates")
+    await state.set_state("rep_get_dates")
     await call.message.answer("Пожалуйста, введите диапазон дат в формате:\n" "'YYYY-MM-DD YYYY-MM-DD'.")
 
 
-@router.message(StateFilter("rep_anim_get_dates"))
+@router.message(StateFilter("rep_get_dates"))
 async def get_report_custom_dates_txt(message: Message, state: FSMContext):
     try:
         dates = message.text.split()
         start_date = f"{dates[0]} 00:00:00"
         end_date = f"{dates[1]} 23:59:59"
         await state.clear()
-        await message.answer(get_animator_report(start_date, end_date), parse_mode="HTML")
+        await message.answer(get_report(start_date, end_date), parse_mode="HTML")
     except Exception as e:
         print(e)
         await message.reply("Неправильный формат даты.\n" "Используйте формат: 'YYYY-MM-DD YYYY-MM-DD'.")
